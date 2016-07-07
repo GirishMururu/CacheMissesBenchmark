@@ -25,7 +25,7 @@ def parse_section(filehandle):
         #print("%s" % line, end=" ");
         if (i == 2):
             #print("%s" % line, end=" ");
-            num_accesses = re.search(r'./fitsincache.exe (.*?)\'', line).group(1);
+            num_accesses = re.search(r'./benchmark.exe (.*?)\'', line).group(1);
             num_accesses = clean_num(num_accesses);
         if (i == 4):
             num_cycles = re.search(r'(.*?) cycles', line).group(1);
