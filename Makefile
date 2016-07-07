@@ -6,7 +6,7 @@ IDIR = ../include
 CC = gcc
 CPPFLAGS = -ggdb -Wall $(DEBUG) -I$(IDIR) -std=gnu11 -funroll-loops
 
-EXEC = gen_defines.exe fitsincache.exe
+EXEC = gen_defines.exe benchmark.exe
 
 all: $(EXEC)
 
