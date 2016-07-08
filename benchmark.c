@@ -75,17 +75,17 @@ int main(int argc, char* argv[])
     {
       #include "defines.h"
       // flush write buffer
-      // barrier();
+      barrier();
 
       i += 8 + src[indexarr63 + i];
 
-      if (i + indexarr63 >= size) {
+      if (i + LAST_INDEX >= size) {
 	myprintf("Resetting...\n");
 	i_start += 8;
 	i = i_start;
-	if (i + indexarr63 >= size) {
+	if (i + LAST_INDEX >= size) {
 	  i_start = 0;
-	  i = size - indexarr63 - 1;
+	  i = size - LAST_INDEX - 1;
 	}
       }
     }
