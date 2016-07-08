@@ -22,7 +22,7 @@
 #include "barrier.h"
 #include "common.h"
 
-volatile long *src, *src1;
+volatile long *src;
 long result;
 unsigned long size;
 
@@ -34,36 +34,34 @@ void warmup(int val)
   if (!src)
     src = (long *)malloc(sizeof(long) * size);
 
-  src1 = (long *)malloc(sizeof(long) * size);
-
   //initialize array
   for (i = 0; i < 5; i++) {
     for (j = 0; j < size; j++) {
-      src1[j] = 8 * val;
       src[j]  = 8;
     }
   }
 
-  free(src1);
 }
 
 void flush_cache(void)
 {
   int offset = CACHE_LINE_SIZE / sizeof(long);
   for (int j = 0; j < size; j+=offset)
-    flush(src+j);
+    flush((void *)src+j);
 }
 
 #pragma GCC optimize ("unroll-loops")
 int main(int argc, char* argv[])
 {
   //warmup(0);
+
   volatile long dest = 32;
   int num_req = 0;
 
   size = MB(MEM_SIZE) / sizeof(long);
 
   src = (long *)malloc(MB(MEM_SIZE));
+
   if (argc > 1)
     num_req = atoi(argv[1]);
 
@@ -87,12 +85,13 @@ int main(int argc, char* argv[])
 	i = i_start;
 	if (i + indexarr63 >= size) {
 	  i_start = 0;
-	  i = 0;
+	  i = size - indexarr63 - 1;
 	}
       }
     }
     //flush_cache();
   }
+
 
   return 0;
 }

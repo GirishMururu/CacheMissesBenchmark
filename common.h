@@ -3,5 +3,5 @@
 
 #define NUM_ACCESSES_PER_ITER 64
 #define MEM_SIZE 32
-#define CACHE_LINE_SIZE 64
+#define CACHE_LINE_SIZE 128
 
