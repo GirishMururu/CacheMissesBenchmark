@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
       // flush write buffer
       barrier();
 
-      i += 8 + src[indexarr63 + i];
+      i += 8 + src[LAST_INDEX + i];
 
       if (i + LAST_INDEX >= size) {
 	myprintf("Resetting...\n");
