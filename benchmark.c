@@ -11,8 +11,8 @@
 #define REPEAT 1
 #else
 #define myprintf(...) 
-#define NUM_ITER 1000000 
-#define REPEAT 10
+#define NUM_ITER 1000000
+#define REPEAT 1
 #endif
 
 #include <stdio.h>
@@ -49,7 +49,6 @@ void warmup(int val)
 
 void flush_cache(void)
 {
-  size = MB(MEM_SIZE) / sizeof(long);
   int offset = CACHE_LINE_SIZE / sizeof(long);
   for (int j = 0; j < size; j+=offset)
     flush(src+j);
@@ -62,14 +61,16 @@ int main(int argc, char* argv[])
   volatile long dest = 32;
   int num_req = 0;
 
+  size = MB(MEM_SIZE) / sizeof(long);
+
   src = (long *)malloc(MB(MEM_SIZE));
   if (argc > 1)
-	  num_req = atoi(argv[1]);
+    num_req = atoi(argv[1]);
 
   struct timespec before, after;
   unsigned long timer = 0;
 
-  flush_cache();
+  //flush_cache();
   for (int repeat = 0; repeat < REPEAT; repeat++) {
     unsigned long j, i = 0, i_start = 0;
     for(j = 0; j < NUM_ITER; j++)
@@ -81,14 +82,17 @@ int main(int argc, char* argv[])
       i += 8 + src[indexarr63 + i];
 
       if (i + indexarr63 >= size) {
-	      myprintf("Resetting...\n");
-	      i_start += 8;
-        i = i_start;
+	myprintf("Resetting...\n");
+	i_start += 8;
+	i = i_start;
+	if (i + indexarr63 >= size) {
+	  i_start = 0;
+	  i = 0;
+	}
       }
     }
     //flush_cache();
   }
 
-  fflush(NULL);
   return 0;
 }
