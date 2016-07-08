@@ -10,8 +10,10 @@ import itertools;
 result_names = list();
 accesses_cycles = list();
 accesses_ipc = list();
+accesses_cache_miss = list();
 tmp_cycles = list();
 tmp_ipc = list();
+tmp_cache_miss = list();
 markers = ('^', '+', 'v', 'o', '*');
 
 def clean_num(number):
@@ -47,6 +49,7 @@ def parse_section(filehandle):
         if (i == 11):
             tmp_cycles.append(num_cycles);
             tmp_ipc.append(float(num_inst)/float(num_cycles));
+            tmp_cache_miss.append(num_cache_miss);
             #print(num_accesses, num_cycles, num_inst, num_cache_ref, num_cache_miss, num_seconds);
             return True;
 
@@ -72,6 +75,8 @@ def main():
         del tmp_cycles[:];
         accesses_ipc.append(list(tmp_ipc));
         del tmp_ipc[:];
+        accesses_cache_miss.append(list(tmp_cache_miss));
+        del tmp_cache_miss[:];
         result_names.append(os.path.splitext(datafile)[0]);
         index += 1;
 
@@ -108,7 +113,21 @@ def main():
         index += 1;
 
     plt.legend(loc="upper right");
+
+    # plot cache misses
+    index = 0;
+    ipc_fig = plt.figure(3);
+    plt.xlabel("Cache Misses Per Iteration");
+    plt.ylabel("Total Cache Misses");
+    imarker = itertools.cycle(markers);
+    while (index < num_files - 1):
+        plt.plot(x, accesses_cache_miss[index], label=result_names[index], marker =
+                next(itertools.cycle(imarker)));
+        index += 1;
+
+    plt.legend(loc="upper right");
     plt.show();
+
 
     # write parsed results to file
     res_file = open("result.csv", 'w');
