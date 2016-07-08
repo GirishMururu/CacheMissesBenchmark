@@ -37,6 +37,11 @@ static inline void xchg(long *ptr, long dst)
 
 #elif defined(__arm__) || defined(__aarch64__)
 
+static inline void xchg(long *ptr, long dst)
+{
+  __atomic_exchange_n(ptr, &dst, __ATOMIC_SEQ_CST);
+}
+
 static inline void flush(void *addr)
 {
   asm volatile("dc cvac, %0" :: "r"(addr));
