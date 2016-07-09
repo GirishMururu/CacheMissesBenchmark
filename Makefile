@@ -5,6 +5,7 @@ endif
 IDIR = ../include
 CC = gcc
 CPPFLAGS = -ggdb -Wall $(DEBUG) -I$(IDIR) -std=gnu11 -funroll-loops
+LDFLAGS = -lpapi
 
 EXEC = gen_defines.exe benchmark.exe
 
@@ -13,7 +14,7 @@ all: $(EXEC)
 .PHONY: all 
 
 $(EXEC): %.exe : %.o
-		  $(CC) $< -o $@ $(CPPFLAGS) 
+		  $(CC) $< -o $@ $(CPPFLAGS) $(LDFLAGS)
 
 $(OBJ): %.o : %.cpp defines.h
 		  $(CC) -o $@ -c $< $(CPPFLAGS)

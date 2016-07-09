@@ -11,7 +11,7 @@
 #define REPEAT 1
 #else
 #define myprintf(...) 
-#define NUM_ITER 1000000
+#define NUM_ITER 100
 #define REPEAT 1
 #endif
 
@@ -21,6 +21,7 @@
 #define USE_BARRIER 1
 #include "barrier.h"
 #include "common.h"
+#include <papi.h>
 
 volatile long *src;
 long result;
@@ -54,12 +55,18 @@ void flush_cache(void)
 int main(int argc, char* argv[])
 {
   //warmup(0);
-
   volatile long dest = 32;
   int num_req = 0;
+  int retval;
+
+  retval = PAPI_library_init(PAPI_VER_CURRENT);
+  if (retval != PAPI_VER_CURRENT)
+  {
+    printf("Library initialization error! \n");
+    exit(1);
+  }
 
   size = MB(MEM_SIZE) / sizeof(long);
-
   src = (long *)malloc(MB(MEM_SIZE));
 
   if (argc > 1)
@@ -71,24 +78,29 @@ int main(int argc, char* argv[])
   //flush_cache();
   for (int repeat = 0; repeat < REPEAT; repeat++) {
     unsigned long j, i = 0, i_start = 0;
+    long start, end;
+
+    start = PAPI_get_real_cyc();
     for(j = 0; j < NUM_ITER; j++)
     {
       #include "defines.h"
       // flush write buffer
-      barrier();
+      // barrier();
 
       i += 8 + src[LAST_INDEX + i];
 
       if (i + LAST_INDEX >= size) {
-	myprintf("Resetting...\n");
-	i_start += 8;
-	i = i_start;
-	if (i + LAST_INDEX >= size) {
-	  i_start = 0;
-	  i = size - LAST_INDEX - 1;
-	}
+        myprintf("Resetting...\n");
+        i_start += 8;
+        i = i_start;
+        if (i + LAST_INDEX >= size) {
+          i_start = 0;
+          i = size - LAST_INDEX - 1;
+        }
       }
     }
+    end = PAPI_get_real_cyc();
+    printf("cyc: %lld\n", end-start);
     //flush_cache();
   }
 
